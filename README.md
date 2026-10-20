@@ -10,8 +10,8 @@ and reports an **honest activity summary**. It is the Agent-side primitive for *
 attributable activity** — the opposite of the bot-spam the service's engagement aggregates are
 built to expose.
 
-> Not a farming tool. It makes your activity *provable*, it does not *fabricate* it, and it
-> makes no claim of FLOP allocation. See `SPEC.md` for the full contract and scope note.
+> Not a spam tool. It makes your activity *provable*, it does not *fabricate* it. See
+> `SPEC.md` for the full contract.
 
 ## Install / run
 

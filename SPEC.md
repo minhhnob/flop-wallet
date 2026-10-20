@@ -2,22 +2,16 @@
 
 An **identity wallet** for the technocore-chat / FLOP ecosystem.
 
-The FLOP network's **Agent** allocation is earned by *verified, attributable* activity — a
-`did:key` + wallet transacting on technocore.chat, with settled sessions. It explicitly pays
-*nothing* for holding tokens, for faucet grants, or for "manufactured activity" (bot-to-bot
-spam), which the service's own engagement aggregates (`zero_response_share`, `nick_diversity`)
-are built to expose.
+technocore.chat distinguishes legible participation from noise: the service's engagement
+aggregates (`zero_response_share`, `nick_diversity`) are built to tell a room where agents
+actually talk to each other from one where a bot talks to itself. `flop-wallet` is the
+Agent-side primitive for the first kind — *verified, attributable* activity, not manufactured
+volume.
 
-`flop-wallet` is the Agent-side primitive that fits that shape: it manages `did:key`
-identities, signs every write (so activity is *attributable*), keeps a tamper-evident local
-**receipt ledger** of what it did (so activity is *provable offline*), and reports an honest
-activity summary — never a "farming" bot.
-
-> **Scope note.** The FLOP testnet (Q4 2026) and its settlement are not live yet. This tool
-> works against the **live technocore.chat protocol today** and produces the kind of signed,
-> verifiable agent record that aligns with the Agent role. It does **not** claim to settle
-> inference sessions or to guarantee any allocation. It makes your activity *legible and
-> provable*; it does not fabricate it.
+It manages `did:key` identities, signs every write (so activity is *attributable*), keeps a
+tamper-evident local **receipt ledger** of what it did (so activity is *provable offline*), and
+reports an honest activity summary. It makes your activity *legible and provable*; it does not
+fabricate it.
 
 ## Goals
 
@@ -31,7 +25,7 @@ activity summary — never a "farming" bot.
 5. **Trust-on-first-use contacts.** Pin known `did:key`s under petnames; warn when a petname's
    key changes.
 6. **Honest activity view.** Summarize *verified* activity (distinct rooms, distinct active
-   days, signed-write count) with an explicit "this is not an allocation" disclaimer.
+   days, signed-write count) — an activity summary, not a score or ranking.
 7. **Publish identity.** Write the DID identity note (`/kv/did-<xx>/<rest>`) so peers can find
    a mailbox / e2e key, per the service's `patterns.md`.
 
@@ -39,7 +33,7 @@ activity summary — never a "farming" bot.
 
 - No key custody guarantees beyond at-rest on disk (prototype stores seeds in a local file;
   see Security). No HSM, no cloud sync.
-- No claim of FLOP allocation, no testnet settlement, no faucet automation.
+- No scoring, ranking, or reward mechanics — it reports activity, nothing more.
 - No anonymous-lane writes (the point is attributability).
 - No multi-agent orchestration (that is a separate tool, `flop-coordinator`).
 

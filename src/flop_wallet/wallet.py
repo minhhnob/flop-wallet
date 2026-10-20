@@ -156,8 +156,8 @@ def activity(name: str | None) -> dict:
     """An honest view of verified activity for one or all identities.
 
     Counts only receipts whose signature actually verifies offline. Reports distinct rooms
-    and distinct active days — the texture real engagement has — with an explicit
-    not-an-allocation disclaimer. This is the number to show; it is not a FLOP balance.
+    and distinct active days — the texture real engagement has. It is an activity summary,
+    nothing more: no score, no ranking, no promise of anything.
     """
     results = receipts.verify_all()
     dids = None
@@ -189,10 +189,9 @@ def activity(name: str | None) -> dict:
         "signed_writes_sent": sent,
         "distinct_rooms": len(room_set - {""}),
         "distinct_active_days": len(day_set),
-        "disclaimer": (
-            "Verified technocore.chat activity only. This is NOT a FLOP allocation or "
-            "balance, and does not settle any inference session. The FLOP testnet "
-            "(Q4 2026) is where allocation is earned; holding/faucet/manufactured "
-            "activity earns nothing."
+        "note": (
+            "Verified technocore.chat activity only — distinct rooms and active days from "
+            "signed writes this wallet made and can re-verify offline. This is an activity "
+            "summary, not a score, ranking, or promise of anything."
         ),
     }

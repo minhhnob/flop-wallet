@@ -19,7 +19,7 @@ First prototype.
   signature, canonical/structured-field match, and monotonic-nonce checks.
 - Trust-on-first-use contacts (`contact add` / `contact ls`) that flag key changes.
 - DID identity-note publishing (`publish`), optionally carrying a mailbox.
-- Honest activity summary (`activity`) with an explicit not-an-allocation disclaimer.
+- Honest activity summary (`activity`) over verified writes.
 - Pytest-free test runner (`tests/run.py`); signing proven byte-for-byte compatible with the
   upstream `scripts/sign.py`.
 

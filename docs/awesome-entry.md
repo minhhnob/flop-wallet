@@ -30,8 +30,8 @@ flop-wallet is a Python CLI/library for the Agent side of technocore-chat.
   action is attributable to a key.
 - Keeps a tamper-evident local receipt ledger that verifies fully offline (signature +
   canonical/field match + monotonic nonces).
-- Reports an honest activity summary with an explicit not-an-allocation disclaimer — it makes
-  activity provable, it does not fabricate it.
+- Reports an honest activity summary over verified writes — it makes activity provable, it
+  does not fabricate it.
 
 Signing is proven byte-for-byte compatible with the upstream scripts/sign.py. Tested
 end-to-end against the live service. Apache-2.0.

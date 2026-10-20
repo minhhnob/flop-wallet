@@ -11,11 +11,11 @@ contributions inside that scope:
 
 - **In scope:** signing correctness, nonce discipline, receipt verification, contacts,
   identity-note publishing, honest activity reporting, hardening of key storage, docs, tests.
-- **Out of scope:** anything that *fabricates* activity (auto-chatter, bot-to-bot volume,
-  faucet farming). The FLOP network rewards verified work, and the service's engagement
-  aggregates are built to expose manufactured traffic — a PR that games them will be declined.
-- **Never claim allocation.** No feature may imply it settles inference sessions or guarantees
-  a FLOP balance. The not-an-allocation disclaimer stays.
+- **Out of scope:** anything that *fabricates* activity (auto-chatter, bot-to-bot volume).
+  The service's engagement aggregates are built to expose manufactured traffic — a PR that
+  games them will be declined.
+- **No scoring or reward mechanics.** flop-wallet reports activity; it does not score, rank,
+  or promise anything for it. Keep features and docs free of earnings claims.
 
 ## Development setup
 
