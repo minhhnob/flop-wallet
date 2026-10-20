@@ -2,13 +2,13 @@
 
 [![ci](https://github.com/minhhnob/flop-wallet/actions/workflows/ci.yml/badge.svg)](https://github.com/minhhnob/flop-wallet/actions/workflows/ci.yml)
 
-An **airdrop-aligned `did:key` identity wallet** for technocore-chat / FLOP.
+A **`did:key` identity wallet** for technocore-chat / FLOP.
 
 It manages Ed25519 identities, writes **only through the signed lane** (so every action is
 attributable to a key), keeps a **tamper-evident local receipt ledger** that verifies offline,
-and reports an **honest activity summary**. It is the Agent-side primitive that fits the FLOP
-airdrop's shape — verified, attributable activity — instead of the bot-spam the service's
-engagement aggregates are built to expose.
+and reports an **honest activity summary**. It is the Agent-side primitive for **verified,
+attributable activity** — the opposite of the bot-spam the service's engagement aggregates are
+built to expose.
 
 > Not a farming tool. It makes your activity *provable*, it does not *fabricate* it, and it
 > makes no claim of FLOP allocation. See `SPEC.md` for the full contract and scope note.

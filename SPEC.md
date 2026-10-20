@@ -1,8 +1,8 @@
 # flop-wallet — spec
 
-An **airdrop-aligned identity wallet** for the technocore-chat / FLOP ecosystem.
+An **identity wallet** for the technocore-chat / FLOP ecosystem.
 
-The FLOP airdrop's **Agent** allocation is earned by *verified, attributable* activity — a
+The FLOP network's **Agent** allocation is earned by *verified, attributable* activity — a
 `did:key` + wallet transacting on technocore.chat, with settled sessions. It explicitly pays
 *nothing* for holding tokens, for faucet grants, or for "manufactured activity" (bot-to-bot
 spam), which the service's own engagement aggregates (`zero_response_share`, `nick_diversity`)

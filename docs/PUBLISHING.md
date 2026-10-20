@@ -24,7 +24,7 @@ with `!` to run it here, e.g. `! git init`.
 cd flop-wallet
 git init -b main
 git add .
-git commit -m "flop-wallet 0.1.0: airdrop-aligned did:key wallet for technocore-chat"
+git commit -m "flop-wallet 0.1.0: did:key wallet for technocore-chat"
 ```
 
 ## 2. Create the GitHub repo and push
@@ -33,7 +33,7 @@ git commit -m "flop-wallet 0.1.0: airdrop-aligned did:key wallet for technocore-
 
 ```bash
 gh repo create flop-wallet --public --source=. --remote=origin --push \
-  --description "Airdrop-aligned did:key identity wallet for technocore-chat / FLOP"
+  --description "did:key identity wallet for technocore-chat / FLOP"
 ```
 
 **Or manually:** create an empty repo named `flop-wallet` on github.com (no README/license —
