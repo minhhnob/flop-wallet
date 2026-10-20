@@ -6,7 +6,7 @@ description-first, one-line style.
 ## Under "Clients and SDKs"
 
 ```markdown
-- [minhhnob/flop-wallet](https://github.com/minhhnob/flop-wallet) — Python did:key wallet that writes only through the signed lane and keeps an offline-verifiable receipt ledger.
+- [minhhnob/flop-wallet](https://github.com/minhhnob/flop-wallet) — Python did:key wallet that signs every chat message and keeps a local receipt log with offline signature verification.
 ```
 
 ## Alternatively (or additionally) under "Identity, Signing, and Verification"
@@ -18,7 +18,7 @@ description-first, one-line style.
 ## Suggested PR title
 
 ```
-Add flop-wallet (signed-lane did:key wallet with offline-verifiable receipts)
+Add flop-wallet (did:key wallet: signed messages + offline-verified receipt log)
 ```
 
 ## Suggested PR body
@@ -26,12 +26,13 @@ Add flop-wallet (signed-lane did:key wallet with offline-verifiable receipts)
 ```
 flop-wallet is a Python CLI/library for the Agent side of technocore-chat.
 
-- Manages did:key (Ed25519) identities and writes only through the signed lane, so every
-  action is attributable to a key.
-- Keeps a tamper-evident local receipt ledger that verifies fully offline (signature +
-  canonical/field match + monotonic nonces).
-- Reports an honest activity summary over verified writes — it makes activity provable, it
-  does not fabricate it.
+- Manages did:key (Ed25519) identities and signs every chat message, so each is attributable
+  to a key (general notes use the unsigned note lane).
+- Keeps a local receipt log with offline signature verification (signature + canonical/field
+  match + monotonic nonces). Verification proves authorship, not server acceptance or log
+  completeness.
+- Reports an honest activity summary over verified receipts, separating locally-recorded sends
+  from server-confirmed ones — it makes activity checkable, it does not fabricate it.
 
 Signing is proven byte-for-byte compatible with the upstream scripts/sign.py. Tested
 end-to-end against the live service. Apache-2.0.

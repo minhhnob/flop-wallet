@@ -87,26 +87,42 @@ def say(name: str | None, room: str, text: str, base: str, dry_run: bool) -> dic
     nonce = store.next_nonce(signer.did, room)
     canonical = signing.canonical_say(room, nonce, text)
     sig = signer.sign(canonical)
-    server, sent = None, False
-    if not dry_run:
+    target = {"room": room}
+
+    def record(status, server):
+        r = receipts.build(ident, signer.did, "say", target, nonce, canonical, sig, status, server)
+        store.append_receipt(r)
+        return r
+
+    if dry_run:
+        return record("dry-run", None)
+
+    # Record the attempt BEFORE the network call. If the process dies or the network throws
+    # mid-send, the ledger still shows a write was begun with this nonce. The pending record
+    # shares its id with the final one, so they collapse to a single row (store.latest_receipts).
+    record("pending", {"base": base})
+
+    try:
         status, body = client.Client(base).say_signed(room, signer.did, sig, nonce, text)
-        sent = status == 200
+    except client.ClientError as e:
+        # No response came back: the write may or may not have landed. 'unknown', not 'failed'.
+        record("unknown", {"base": base, "error": str(e)})
+        raise WalletError(f"network error — delivery unknown, nonce {nonce} spent: {e}") from None
+
+    ok = 200 <= status < 300
+    seq = ts = None
+    if ok:
         seq, ts = _parse_seq(body), None
-        if sent and seq is None:
+        if seq is None:
             # The signed reply is a text view with no parseable seq, so read the room back and
             # stamp the authoritative seq/ts the server assigned our record.
             seq, ts = _stamp_from_server(base, room, signer.did, sig)
-        server = {"base": base, "status": status, "seq": seq, "ts": ts,
-                  "echo": body.strip().splitlines()[-1][:200] if body.strip() else ""}
-        if not sent:
-            # Record the attempt anyway — a 4xx is part of the honest ledger — then raise.
-            r = receipts.build(ident, signer.did, "say", {"room": room}, nonce, canonical,
-                               sig, sent, server)
-            store.append_receipt(r)
-            raise WalletError(f"server refused: HTTP {status}: {body[:200]}")
-    r = receipts.build(ident, signer.did, "say", {"room": room}, nonce, canonical, sig,
-                       sent, server)
-    store.append_receipt(r)
+    server = {"base": base, "status": status, "seq": seq, "ts": ts,
+              "confirmed": bool(ok and seq is not None),
+              "echo": body.strip().splitlines()[-1][:200] if body.strip() else ""}
+    r = record("sent" if ok else "rejected", server)
+    if not ok:
+        raise WalletError(f"server refused: HTTP {status}: {body[:200]}")
     return r
 
 
@@ -153,11 +169,14 @@ def contact_list() -> list[dict]:
 # --- activity summary -------------------------------------------------------
 
 def activity(name: str | None) -> dict:
-    """An honest view of verified activity for one or all identities.
+    """An honest view of activity for one or all identities.
 
-    Counts only receipts whose signature actually verifies offline. Reports distinct rooms
-    and distinct active days — the texture real engagement has. It is an activity summary,
-    nothing more: no score, no ranking, no promise of anything.
+    Every positive metric is gated on the signature verifying offline — an unverified receipt
+    counts toward nothing but its own status tally. It also separates what the wallet *recorded
+    as sent* (a local 2xx) from what it *confirmed by reading back* from the server (a stamped
+    `seq`), because only the latter is evidence the write is actually in the room. Distinct
+    rooms and active days are computed from confirmed sends, dated by the server's timestamp
+    when present rather than the local clock. It is an activity summary, nothing more.
     """
     results = receipts.verify_all()
     dids = None
@@ -166,32 +185,44 @@ def activity(name: str | None) -> dict:
         if name not in keys:
             raise WalletError(f"no identity named {name!r}")
         dids = {keys[name]["did"]}
-    sent = rooms = 0
-    verified = 0
+
+    total = verified = sent = confirmed = 0
+    by_status: dict[str, int] = {}
     room_set: set[str] = set()
     day_set: set[str] = set()
     for res in results:
         r = res["receipt"]
         if dids is not None and r["did"] not in dids:
             continue
-        if res["ok"]:
-            verified += 1
-        if r.get("sent"):
+        total += 1
+        by_status[r.get("status", "?")] = by_status.get(r.get("status", "?"), 0) + 1
+        if not res["ok"]:
+            continue  # signature did not verify — excluded from every positive metric
+        verified += 1
+        server = r.get("server") or {}
+        if r.get("status") == "sent":
             sent += 1
-        if r["kind"] == "say" and r.get("sent"):
-            room_set.add(r["target"].get("room", ""))
-            day_set.add(time.strftime("%Y-%m-%d", time.gmtime(r["ts_local"])))
+            if server.get("seq") is not None:
+                confirmed += 1
+                if r["kind"] == "say":
+                    room_set.add(r["target"].get("room", ""))
+                    ts = server.get("ts")
+                    day = ts[:10] if isinstance(ts, str) and len(ts) >= 10 else \
+                        time.strftime("%Y-%m-%d", time.gmtime(r["ts_local"]))
+                    day_set.add(day)
     return {
         "identity": name or "(all)",
-        "receipts_total": sum(1 for res in results
-                              if dids is None or res["receipt"]["did"] in dids),
+        "receipts_total": total,
         "signatures_verified": verified,
-        "signed_writes_sent": sent,
-        "distinct_rooms": len(room_set - {""}),
-        "distinct_active_days": len(day_set),
+        "recorded_sent": sent,            # local 2xx — the wallet's own account
+        "server_confirmed": confirmed,    # re-read back from the room (stamped seq)
+        "by_status": by_status,           # includes pending / unknown / rejected / dry-run
+        "distinct_rooms_confirmed": len(room_set - {""}),
+        "distinct_active_days_confirmed": len(day_set),
         "note": (
-            "Verified technocore.chat activity only — distinct rooms and active days from "
-            "signed writes this wallet made and can re-verify offline. This is an activity "
-            "summary, not a score, ranking, or promise of anything."
+            "technocore.chat activity only, and the wallet's own account of it. "
+            "'server_confirmed' is the subset re-read back from the room; 'recorded_sent' is a "
+            "local status that does not by itself prove storage. Not a score, ranking, or "
+            "promise of anything, and the local log may be incomplete."
         ),
     }

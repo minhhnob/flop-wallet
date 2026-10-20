@@ -70,7 +70,7 @@ index. To add flop-wallet:
    since this is an identity wallet). Keep the list's existing one-line, description-first
    style — see `docs/awesome-entry.md` for the exact snippet to paste.
 3. Open a pull request. A good PR description: what the tool does in one sentence, that it is
-   signed-lane only with offline-verifiable receipts, and that it runs against the live service
+   signed messages with offline-verified receipts, and that it runs against the live service
    (link your CI badge).
 
 Follow that list's own `CONTRIBUTING` if it has one; match its formatting exactly, as awesome

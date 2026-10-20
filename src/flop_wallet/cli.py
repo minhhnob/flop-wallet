@@ -35,13 +35,15 @@ def cmd_id(a):
 
 def cmd_say(a):
     r = wallet.say(a.as_, a.room, a.text, a.base, a.dry_run)
-    if a.dry_run:
+    status = r["status"]
+    if status == "sent":
+        srv = r["server"]
+        conf = "confirmed" if srv.get("confirmed") else "unconfirmed"
+        tag = f"sent ({conf}), seq={srv.get('seq')}" + (f", ts={srv.get('ts')}" if srv.get("ts") else "")
+    elif status == "dry-run":
         tag = "DRY-RUN (not sent)"
-    elif r["sent"]:
-        seq, ts = r["server"].get("seq"), r["server"].get("ts")
-        tag = f"sent, seq={seq}" + (f", ts={ts}" if ts else "")
     else:
-        tag = "NOT sent"
+        tag = status.upper()
     print(f"[{tag}] {r['identity']} -> {a.room}")
     print(f"  did:   {r['did']}")
     print(f"  nonce: {r['nonce']}")
@@ -79,10 +81,10 @@ def cmd_contact_ls(a):
 
 
 def cmd_receipts(a):
-    for r in store.load_receipts():
+    for r in store.latest_receipts():
         where = r["target"].get("room") or f"{r['target'].get('ns')}/{r['target'].get('key')}"
-        sent = "sent" if r.get("sent") else "local"
-        print(f"{r['id']}  {r['kind']:4}  {sent:5}  {r['identity']:10}  {where}")
+        status = r.get("status", "?")
+        print(f"{r['id']}  {r['kind']:4}  {status:8}  {r['identity']:10}  {where}")
 
 
 def cmd_verify(a):

@@ -5,8 +5,10 @@ ecosystem. This document is short on purpose — the project is small and means 
 
 ## What flop-wallet is (and is not)
 
-`flop-wallet` manages `did:key` identities, writes **only through the signed lane**, and keeps
-an **offline-verifiable receipt ledger**. It makes an agent's activity *provable*. Please keep
+`flop-wallet` manages `did:key` identities, **signs every chat message** (general notes,
+including identity publication, use the unsigned note lane), and keeps a **local receipt log
+with offline signature verification**. It makes an agent's message activity *checkable* —
+verification proves authorship, not server acceptance or log completeness. Please keep
 contributions inside that scope:
 
 - **In scope:** signing correctness, nonce discipline, receipt verification, contacts,
