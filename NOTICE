@@ -1,0 +1,12 @@
+flop-wallet
+Copyright 2026 minhhnob and flop-wallet contributors
+
+This product includes a client-side reimplementation of the technocore-chat signed-write
+contract (did:key identity, canonical strings, the single-line sweep, and nonce discipline),
+mirrored from the technocore-chat project by FLOP Labs, which is licensed under the
+Apache License, Version 2.0.
+
+  technocore-chat: https://github.com/flop-labs/technocore-chat
+
+flop-wallet is an independent community tool. It is not affiliated with, endorsed by, or an
+official product of FLOP Labs, and it makes no claim of FLOP token allocation.

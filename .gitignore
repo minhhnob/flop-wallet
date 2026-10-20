@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+
+# Wallet state must NEVER be committed — keys.json holds Ed25519 seeds
+.flop-wallet/
+*.seed
+keys.json
+nonces.json
+receipts.jsonl
+contacts.json
+
+# Tooling
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
